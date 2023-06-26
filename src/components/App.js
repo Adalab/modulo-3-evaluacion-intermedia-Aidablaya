@@ -1,13 +1,16 @@
 
 import '../styles/App.scss';
-import { useState,useEffect } from 'react';
+import { useState,useEffect, cloneElement } from 'react';
 //import data from '../data/data.json';
 
 function App() {
   const [phrasesList, setPharsesList] = useState([]);
   const [phraseSearch, setPhraseSearch] = useState('');
   const [selectCharacter, setSelectCharacter] = useState('');
-
+  const [newElement, setNewElement] = useState (
+    {phrase: '',
+    character: ''}
+  );
   //// fetch a la api
   useEffect(()=> {
     fetch('https://beta.adalab.es/curso-intensivo-fullstack-recursos/apis/quotes-friends-tv-v1/quotes.json')
@@ -35,6 +38,11 @@ function App() {
     setSelectCharacter(ev.target.value);
   };
 
+  const handleInputNew = (ev) => {
+    const clonedNew={...newElement};
+    clonedNew[ev.target.id]= ev.target.value;
+    setNewElement(clonedNew);
+  }
  
 
   ///render list
@@ -77,7 +85,20 @@ function App() {
             </option>
           ))}
         </select>
-    
+        <label htmlFor="newPhrase">Frase</label>
+        <input type="text" 
+        name='phrase' 
+        value={newElement.phrase}   
+        onInput={handleInputNew}   
+        />
+        <label htmlFor="newCharacter">Personaje</label>
+        <input type="text" 
+        name='character'
+        value={newElement.character} 
+        onInput={handleInputNew}   
+        />
+        <button>Añadir</button>
+        
       </form>
       <ul>
         {renderListFriends()}
