@@ -1,11 +1,11 @@
 
 import '../styles/App.scss';
 import { useState,useEffect } from 'react';
-import data from '../data/data.json';
+//import data from '../data/data.json';
 
 function App() {
   const [phrasesList, setPharsesList] = useState([]);
-  
+  const [phraseSearch, setPhraseSearch] = useState('');
 
   //// fetch a la api
   useEffect(()=> {
@@ -25,20 +25,39 @@ function App() {
       });
   }, []);
 
+  ///funciones handle
+  const handleInputSearch = (ev) => {
+    setPhraseSearch(ev.target.value);
+  };
+
+ 
+
   ///render list
   const renderListFriends = () => {
-    return phrasesList.map((eachPhrase)=> 
+    //filtrar frase
+    const filteredList= phrasesList.filter ((eachPhrase)=>
+    eachPhrase.phrase.toLowerCase().includes(phraseSearch.toLowerCase()) 
+    
+    );
+    return filteredList.map((eachPhrase)=> 
     <li key={eachPhrase.id}>
-      <p>`{eachPhrase.phrase}, {eachPhrase.character}`</p>
+      <p>{`${eachPhrase.phrase}, ${eachPhrase.character}`}</p>
     </li>
     )
-  }
+  };
 
   return (
     <div className="App">
       <h1>Frases de Friends</h1>
       <form>
         <label htmlFor="search">Filtrar por frase:</label>
+        <input type="search" 
+        name='search'
+        value={phraseSearch}
+        onInput={handleInputSearch}
+        />
+
+    
       </form>
       <ul>
         {renderListFriends()}
