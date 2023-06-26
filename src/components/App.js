@@ -6,6 +6,7 @@ import { useState,useEffect } from 'react';
 function App() {
   const [phrasesList, setPharsesList] = useState([]);
   const [phraseSearch, setPhraseSearch] = useState('');
+  const [selectCharacter, setSelectCharacter] = useState('');
 
   //// fetch a la api
   useEffect(()=> {
@@ -30,16 +31,26 @@ function App() {
     setPhraseSearch(ev.target.value);
   };
 
+  const handleSelectCharacter = (ev) => {
+    setSelectCharacter(ev.target.value);
+  };
+
  
 
   ///render list
   const renderListFriends = () => {
     //filtrar frase
     const filteredList= phrasesList.filter ((eachPhrase)=>
-    eachPhrase.phrase.toLowerCase().includes(phraseSearch.toLowerCase()) 
-    
+    eachPhrase.phrase.toLowerCase().includes(phraseSearch.toLowerCase())  
     );
-    return filteredList.map((eachPhrase)=> 
+
+    //los personajes del select salen repetido- crear nueva lista
+    const characters = [...new Set(filteredList.map((eachPhrase)=> eachPhrase.character))];
+
+    //filtrar por personaje dentro del renderizado, para que se muestren los dos filtros
+    const characterFilteredList = selectCharacter ==='' ? filteredList : filteredList.filter((eachPhrase)=> eachPhrase.character === selectCharacter);
+
+    return characterFilteredList.map((eachPhrase)=> 
     <li key={eachPhrase.id}>
       <p>{`${eachPhrase.phrase}, ${eachPhrase.character}`}</p>
     </li>
@@ -56,7 +67,16 @@ function App() {
         value={phraseSearch}
         onInput={handleInputSearch}
         />
-
+        <label htmlFor="character">Filtrar por personaje</label>
+        <select name="character" id="characterSelect" onChange={handleSelectCharacter} >
+          
+          <option value="">Todos</option>
+          {phrasesList.map((eachPhrase)=> (
+            <option key={eachPhrase.id} value={eachPhrase.character}>Todos
+            {eachPhrase.character}
+            </option>
+          ))}
+        </select>
     
       </form>
       <ul>
