@@ -1,6 +1,6 @@
 
 import '../styles/App.scss';
-import { useState,useEffect, cloneElement } from 'react';
+import { useState,useEffect, } from 'react';
 //import data from '../data/data.json';
 
 function App() {
@@ -11,6 +11,7 @@ function App() {
     {phrase: '',
     character: ''}
   );
+   let characters = [];
   //// fetch a la api
   useEffect(()=> {
     fetch('https://beta.adalab.es/curso-intensivo-fullstack-recursos/apis/quotes-friends-tv-v1/quotes.json')
@@ -39,15 +40,22 @@ function App() {
   };
 
   const handleInputNew = (ev) => {
-    const clonedNew={...newElement};
-    clonedNew[ev.target.id]= ev.target.value;
-    setNewElement(clonedNew);
-  }
+    setNewElement({...newElement, [ev.target.name]: ev.target.value});
+  };
+
+  const handleClick = (ev) => {
+    ev.preventDefault();
+    setPharsesList([...phrasesList,newElement]);
+    setNewElement({
+      phrase:'',
+      character: '',
+    });
+  };
  
 
   ///render list
   const renderListFriends = () => {
-    //filtrar frase
+    //filtrar frase//siempre antes de mapear
     const filteredList= phrasesList.filter ((eachPhrase)=>
     eachPhrase.phrase.toLowerCase().includes(phraseSearch.toLowerCase())  
     );
@@ -58,6 +66,7 @@ function App() {
     //filtrar por personaje dentro del renderizado, para que se muestren los dos filtros
     const characterFilteredList = selectCharacter ==='' ? filteredList : filteredList.filter((eachPhrase)=> eachPhrase.character === selectCharacter);
 
+    //1 render map, convertir array de datos en html
     return characterFilteredList.map((eachPhrase)=> 
     <li key={eachPhrase.id}>
       <p>{`${eachPhrase.phrase}, ${eachPhrase.character}`}</p>
@@ -65,10 +74,16 @@ function App() {
     )
   };
 
+
+ 
+
   return (
     <div className="App">
-      <h1>Frases de Friends</h1>
-      <form>
+      <header className='header'>
+        <h1>Frases de Friends</h1>
+      </header>
+      <main className='main'>
+      <form className='form'>
         <label htmlFor="search">Filtrar por frase:</label>
         <input type="search" 
         name='search'
@@ -78,13 +93,15 @@ function App() {
         <label htmlFor="character">Filtrar por personaje</label>
         <select name="character" id="characterSelect" onChange={handleSelectCharacter} >
           
-          <option value="">Todos</option>
-          {phrasesList.map((eachPhrase)=> (
-            <option key={eachPhrase.id} value={eachPhrase.character}>Todos
-            {eachPhrase.character}
+          <option value="all">Todos</option>
+          {characters.map((character) => (
+          <option key={character} value={character}>
+          {character}
             </option>
           ))}
+
         </select>
+
         <label htmlFor="newPhrase">Frase</label>
         <input type="text" 
         name='phrase' 
@@ -97,10 +114,11 @@ function App() {
         value={newElement.character} 
         onInput={handleInputNew}   
         />
-        <button>Añadir</button>
+        <button onClick={handleClick}>Añadir</button>
         
       </form>
-      <ul>
+      </main>
+      <ul className='list'>
         {renderListFriends()}
       </ul>
     </div>
